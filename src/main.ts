@@ -368,25 +368,12 @@ class RenamePreviewModal extends Modal {
 
 			if (isSkipped) {
 				task.action = 'skip';
-				if (!this.localSettings.continuousNumbering) {
-					// Для пропущенных файлов тоже проверяем уникальность базового имени
-					let isUnique = false;
-					while (!isUnique) {
-						const { proposedName, proposedPath, proposedBaseName } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
-						const existingFile = this.app.vault.getAbstractFileByPath(proposedPath);
-						
-						// Проверяем: нет на диске (или это тот же файл) И базовое имя не занято
-						if ((!existingFile || existingFile.path === file.path) && !assignedBaseNames.has(proposedBaseName)) {
-							isUnique = true;
-							task.proposedName = proposedName; 
-							task.proposedPath = proposedPath;
-							assignedBaseNames.add(proposedBaseName);
-						} else {
-							index++;
-						}
-					}
-					index++; 
-				}
+				// Всегда вычисляем базовое имя и добавляем в занятые, чтобы следующие файлы не получили такой же индекс
+				const { proposedName, proposedPath, proposedBaseName } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
+				task.proposedName = proposedName; 
+				task.proposedPath = proposedPath;
+				assignedBaseNames.add(proposedBaseName);
+				index++;
 			} else {
 				let isUnique = false;
 				
