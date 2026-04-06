@@ -366,7 +366,7 @@ class RenamePreviewModal extends Modal {
 				targetAction = 'copy';
 			}
 
-			if (isSkipped) {
+			/*if (isSkipped) {
 				task.action = 'skip';
 				// Всегда вычисляем базовое имя и добавляем в занятые, чтобы следующие файлы не получили такой же индекс
 				const { proposedName, proposedPath, proposedBaseName } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
@@ -376,6 +376,23 @@ class RenamePreviewModal extends Modal {
 				// Инкрементируем индекс только если галка "Сплошная нумерация" выключена
 				if (!this.localSettings.continuousNumbering) {
 					index++;
+				}
+			} else {*/
+			if (isSkipped) {
+				task.action = 'skip';
+				
+				// Если галка ВЫКЛЮЧЕНА (учитываем пропущенные)
+				if (!this.localSettings.continuousNumbering) {
+					const { proposedName, proposedPath, proposedBaseName } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
+					task.proposedName = proposedName; 
+					task.proposedPath = proposedPath;
+					assignedBaseNames.add(proposedBaseName); // Занимаем имя
+					index++; // Сдвигаем индекс
+				} else {
+					// Если галка ВКЛЮЧЕНА (игнорируем пропущенные)
+					// Ничего не вычисляем, не занимаем имя в assignedBaseNames и не сдвигаем индекс
+					task.proposedName = '';
+					task.proposedPath = '';
 				}
 			} else {
 				let isUnique = false;
