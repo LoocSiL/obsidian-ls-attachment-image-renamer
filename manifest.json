@@ -1,0 +1,10 @@
+{
+	"id": "ls-attachment-image-renamer",
+	"name": "LS Image Renamer",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "Умное переименование картинок в заметке",
+	"author": "LoocSiL",
+	"authorUrl": "https://t.me/excel_cad_bim",
+	"isDesktopOnly": false
+}

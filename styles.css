@@ -1,0 +1,226 @@
+/* Задаем ширину ТОЛЬКО для окна нашего плагина */
+.modal:has(.ls-renamer-modal) {
+  width: 800px;
+  max-width: 95vw;
+  max-height: 90vh;
+}
+
+/* ============ НАСТРОЙКИ ПЛАГИНА ============ */
+.ls-renamer-setting-desc { margin-bottom: 12px; color: var(--text-muted); }
+.ls-renamer-modal { overflow: hidden; display: flex; flex-direction: column; }
+.ls-renamer-modal h2 { margin-top: 0; margin-bottom: 12px; }
+
+/* --- ПАНЕЛЬ НАСТРОЕК В МОДАЛКЕ --- */
+.ls-renamer-modal-settings {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.ls-renamer-setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ls-renamer-setting-item label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Для галочки сплошной нумерации */
+.ls-renamer-setting-toggle {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+.ls-renamer-setting-toggle input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+.ls-renamer-setting-toggle label {
+  cursor: pointer;
+}
+
+.ls-renamer-setting-item input[type="text"] { width: 400px; }
+.ls-renamer-setting-item select { cursor: pointer; }
+
+/* --- СПИСОК ФАЙЛОВ --- */
+.ls-renamer-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+  margin-bottom: 16px;
+}
+
+.ls-renamer-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.ls-renamer-item:last-child { border-bottom: none; }
+.ls-renamer-item:hover { background: var(--background-modifier-hover); }
+
+.ls-renamer-item input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ls-renamer-item.is-disabled { opacity: 0.5; background: var(--background-secondary-alt); }
+.ls-renamer-item.is-disabled input { cursor: pointer; }
+
+/* Защита от кликов по чекбоксу для реально отключенных задач */
+.ls-renamer-item.is-locked input { cursor: not-allowed; }
+
+/* Базовый бейдж (по умолчанию красный для "Переименовать" / "Копировать") */
+.ls-renamer-badge {
+  display: inline-flex;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(var(--background-modifier-error-rgb), 0.15);
+  color: var(--text-error);
+  width: max-content;
+  transition: all 0.2s ease;
+}
+
+/* Зеленый бейдж (Без изменений) */
+.ls-renamer-badge.is-success {
+  background: rgba(var(--color-green-rgb), 0.15);
+  color: var(--color-green);
+}
+
+/* Желтый бейдж (Пропустить) */
+.ls-renamer-badge.is-warning {
+  background: rgba(var(--color-orange-rgb), 0.15);
+  color: var(--color-orange);
+}
+
+/* Модификатор для статуса в списке (табличный вид) */
+.ls-status-badge {
+  width: 120px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ls-renamer-names {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.ls-renamer-old-name { color: var(--text-muted); text-decoration: line-through; }
+.ls-renamer-old-name-normal { color: var(--text-normal); }
+.ls-renamer-arrow { color: var(--text-faint); font-size: 12px; }
+.ls-renamer-new-name { color: var(--text-accent); font-weight: 600; }
+
+/* НОВОЕ: Зачеркнутое (сгоревшее) новое имя */
+.ls-renamer-new-name-crossed { 
+  color: var(--text-muted); 
+  text-decoration: line-through; 
+  font-weight: 400;
+}
+
+.ls-renamer-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* --- ДИЗАЙН СТРОК И ОТСТУПОВ --- */
+.ls-renamer-item-col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ls-renamer-names-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.ls-renamer-names-row input[type="checkbox"] {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.ls-indent {
+  margin-left: 26px; /* 16px галочка + 10px отступ */
+}
+
+/* Контейнер для списка заметок */
+.ls-renamer-usage-box {
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border-hover);
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: calc(100% - 26px);
+}
+
+.ls-renamer-notes-list {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 4px;
+}
+
+/* --- ОКНО ПРОГРЕССА --- */
+.ls-progress-modal {
+  text-align: center;
+  padding: 10px 0;
+}
+.ls-progress-modal h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+.ls-progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: var(--background-modifier-border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.ls-progress-bar-fill {
+  height: 100%;
+  background: var(--color-accent);
+  width: 0%;
+  transition: width 0.1s ease-out;
+}
+.ls-progress-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Иконка в списке настроек */
+.vertical-tab-nav-item[data-setting-id="ls-attachment-image-renamer"] .vertical-tab-nav-item-title::before {
+  content: '💢';
+  margin-right: 6px;
+}
