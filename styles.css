@@ -49,7 +49,6 @@
   cursor: pointer;
 }
 
-.ls-renamer-setting-item input[type="text"] { width: 400px; }
 .ls-renamer-setting-item select { cursor: pointer; }
 
 /* --- СПИСОК ФАЙЛОВ --- */
@@ -236,7 +235,7 @@
 }
 
 .ls-renamer-date-input {
-  width: 140px;
+  width: 150px;
 }
 
 .ls-renamer-warning-text {
