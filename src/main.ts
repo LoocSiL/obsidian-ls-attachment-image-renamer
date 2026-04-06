@@ -334,7 +334,7 @@ class RenamePreviewModal extends Modal {
 		const prefix = (parentPath === '' || parentPath === '/') ? '' : parentPath + '/';
 		const proposedPath = `${prefix}${proposedName}`;
 
-		return { proposedName, proposedPath };
+		return { proposedName, proposedPath, proposedBaseName: newBaseName };
 	}
 
 	updateTasksAndRender() {
@@ -344,8 +344,8 @@ class RenamePreviewModal extends Modal {
 		this.checkboxes = [];
 		let index = 1;
 
-		// Собираем все уже назначенные пути, чтобы избежать конфликтов между задачами
-		const assignedPaths = new Set<string>();
+		// Собираем все уже назначенные базовые имена (без расширения), чтобы избежать конфликтов
+		const assignedBaseNames = new Set<string>();
 
 		for (const state of this.itemStates) {
 			const file = state.data.file;
@@ -369,18 +369,18 @@ class RenamePreviewModal extends Modal {
 			if (isSkipped) {
 				task.action = 'skip';
 				if (!this.localSettings.continuousNumbering) {
-					// Для пропущенных файлов тоже проверяем уникальность
+					// Для пропущенных файлов тоже проверяем уникальность базового имени
 					let isUnique = false;
 					while (!isUnique) {
-						const { proposedName, proposedPath } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
+						const { proposedName, proposedPath, proposedBaseName } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
 						const existingFile = this.app.vault.getAbstractFileByPath(proposedPath);
 						
-						// Проверяем и на диске, и среди уже назначенных путей
-						if ((!existingFile || existingFile.path === file.path) && !assignedPaths.has(proposedPath)) {
+						// Проверяем: нет на диске (или это тот же файл) И базовое имя не занято
+						if ((!existingFile || existingFile.path === file.path) && !assignedBaseNames.has(proposedBaseName)) {
 							isUnique = true;
 							task.proposedName = proposedName; 
 							task.proposedPath = proposedPath;
-							assignedPaths.add(proposedPath);
+							assignedBaseNames.add(proposedBaseName);
 						} else {
 							index++;
 						}
@@ -391,16 +391,16 @@ class RenamePreviewModal extends Modal {
 				let isUnique = false;
 				
 				while (!isUnique) {
-					const { proposedName, proposedPath } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
+					const { proposedName, proposedPath, proposedBaseName } = this.getProposedPath(baseNoteName, ext, index, parentPath, file, hash);
 					const existingFile = this.app.vault.getAbstractFileByPath(proposedPath);
 					
-					// Проверяем и на диске, и среди уже назначенных путей
-					if (!existingFile && !assignedPaths.has(proposedPath)) {
+					// Проверяем: нет на диске И базовое имя не занято
+					if (!existingFile && !assignedBaseNames.has(proposedBaseName)) {
 						isUnique = true;
 						task.action = targetAction;
 						task.proposedName = proposedName;
 						task.proposedPath = proposedPath;
-						assignedPaths.add(proposedPath);
+						assignedBaseNames.add(proposedBaseName);
 					} else if (existingFile && existingFile.path === file.path) {
 						if (targetAction === 'copy') {
 							index++;
@@ -409,6 +409,7 @@ class RenamePreviewModal extends Modal {
 							task.action = 'already_done';
 							task.proposedName = proposedName;
 							task.proposedPath = proposedPath;
+							assignedBaseNames.add(proposedBaseName);
 						}
 					} else {
 						index++;
