@@ -373,7 +373,10 @@ class RenamePreviewModal extends Modal {
 				task.proposedName = proposedName; 
 				task.proposedPath = proposedPath;
 				assignedBaseNames.add(proposedBaseName);
-				index++;
+				// Инкрементируем индекс только если галка "Сплошная нумерация" выключена
+				if (!this.localSettings.continuousNumbering) {
+					index++;
+				}
 			} else {
 				let isUnique = false;
 				
