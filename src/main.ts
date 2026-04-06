@@ -56,7 +56,7 @@ export default class LSRenamerPlugin extends Plugin {
 				const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
 				if (activeView) {
 					if (!checking) {
-						this.startRenameProcess(activeView);
+						void this.startRenameProcess(activeView);
 					}
 					return true;
 				}
@@ -68,7 +68,8 @@ export default class LSRenamerPlugin extends Plugin {
 	}
 
 	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+		const loadedData = await this.loadData() as Partial<LSRenamerSettings> | null;
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData ?? {});
 	}
 
 	async saveSettings() {
@@ -144,8 +145,8 @@ export default class LSRenamerPlugin extends Plugin {
 			hashProgressModal.close();
 		}
 
-		// @ts-ignore
-		const updateLinksEnabled = this.app.vault.getConfig('alwaysUpdateLinks');
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+		const updateLinksEnabled = (this.app.vault as any).getConfig('alwaysUpdateLinks') as boolean;
 
 		if (updateLinksEnabled !== true) {
 			const warningMsg = 'В настройках Obsidian (Файлы и ссылки) ОТКЛЮЧЕНА галочка "Всегда обновлять внутренние ссылки".\n\nЕсли вы продолжите, файлы будут переименованы, но ссылки в заметках НЕ ОБНОВЯТСЯ и картинки перестанут отображаться.\n\nВы точно хотите продолжить?';
@@ -238,7 +239,7 @@ class RenamePreviewModal extends Modal {
 		const { contentEl } = this;
 		contentEl.addClass('ls-renamer-modal');
 
-		contentEl.createEl('h2', { text: 'Предпросмотр переименования' });
+		contentEl.createEl('h2', { text: 'Предпросмотр переименования', cls: 'ls-renamer-modal-heading' });
 
 		const settingsBar = contentEl.createDiv({ cls: 'ls-renamer-modal-settings' });
 
@@ -249,8 +250,7 @@ class RenamePreviewModal extends Modal {
 		
 		templateItem.createEl('label', { text: labelText });
 		
-		const templateInput = templateItem.createEl('input', { type: 'text' });
-		templateInput.style.width = '400px'; 
+		const templateInput = templateItem.createEl('input', { type: 'text', cls: 'ls-renamer-template-input' });
 		templateInput.value = this.localSettings.template;
 		templateInput.oninput = (e) => {
 			this.localSettings.template = (e.target as HTMLInputElement).value || '{{notename}}-{{index}}';
@@ -258,9 +258,9 @@ class RenamePreviewModal extends Modal {
 		};
 
 		const dateItem = settingsBar.createDiv({ cls: 'ls-renamer-setting-item' });
-		dateItem.createEl('label', { text: 'Формат даты ({{date}}):' });
-		const dateInput = dateItem.createEl('input', { type: 'text', attr: { placeholder: 'YYYYMMDDHHmmss' } });
-		dateInput.style.width = '140px';
+		dateItem.createEl('label', { text: 'Формат даты' });
+		// eslint-disable-next-line obsidianmd/ui/sentence-case
+		const dateInput = dateItem.createEl('input', { type: 'text', cls: 'ls-renamer-date-input', attr: { placeholder: 'YYYYMMDDHHmmss' } });
 		dateInput.value = this.localSettings.dateFormat;
 		dateInput.oninput = (e) => {
 			this.localSettings.dateFormat = (e.target as HTMLInputElement).value || 'YYYYMMDDHHmmss';
@@ -268,7 +268,7 @@ class RenamePreviewModal extends Modal {
 		};
 
 		const indexItem = settingsBar.createDiv({ cls: 'ls-renamer-setting-item' });
-		indexItem.createEl('label', { text: 'Формат нумерации:' });
+		indexItem.createEl('label', { text: 'Формат нумерации' });
 		const indexSelect = indexItem.createEl('select');
 		indexSelect.add(new Option('1, 2, 3...', '1'));
 		indexSelect.add(new Option('01, 02, 03...', '2'));
@@ -281,7 +281,7 @@ class RenamePreviewModal extends Modal {
 		};
 
 		const actionItem = settingsBar.createDiv({ cls: 'ls-renamer-setting-item' });
-		actionItem.createEl('label', { text: 'Действие для общих картинок:' });
+		actionItem.createEl('label', { text: 'Действие для общих картинок' });
 		const actionSelect = actionItem.createEl('select');
 		actionSelect.add(new Option('Пропустить (не переименовывать)', 'skip'));
 		actionSelect.add(new Option('Переименовать (для всех заметок)', 'rename_all'));
@@ -311,7 +311,7 @@ class RenamePreviewModal extends Modal {
 
 		const applyBtn = buttonsEl.createEl('button', { text: 'Применить', cls: 'mod-cta' });
 		applyBtn.onclick = () => {
-			this.executeRenames();
+			void this.executeRenames();
 			this.close(); 
 		};
 
@@ -567,10 +567,7 @@ class ConfirmModal extends Modal {
 		
 		contentEl.createEl('h2', { text: '⚠️ Внимание!' });
 		
-		const p = contentEl.createEl('p', { text: this.message });
-		p.style.whiteSpace = 'pre-wrap';
-		p.style.color = 'var(--text-error)';
-		p.style.marginBottom = '20px';
+		contentEl.createEl('p', { text: this.message, cls: 'ls-renamer-warning-text' });
 
 		const buttonsEl = contentEl.createDiv({ cls: 'ls-renamer-buttons' });
 		
@@ -601,7 +598,7 @@ class LSRenamerSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Настройки Simple Image Renamer' });
+		new Setting(containerEl).setName('Настройки simple image renamer').setHeading();
 
 		const templateDesc = this.plugin.settings.enableHash
 			? 'Доступные переменные: {{notename}}, {{index}}, {{originalname}}, {{date}}, {{hash}}'
@@ -611,7 +608,7 @@ class LSRenamerSettingTab extends PluginSettingTab {
 			.setName('Шаблон имени файла')
 			.setDesc(templateDesc)
 			.addText(text => {
-				text.inputEl.style.width = '300px';
+				text.inputEl.addClass('ls-renamer-settings-input');
 				
 				text.setPlaceholder('{{notename}}-{{index}}')
 					.setValue(this.plugin.settings.template)
@@ -625,6 +622,7 @@ class LSRenamerSettingTab extends PluginSettingTab {
 			.setName('Формат даты')
 			.setDesc('Используется для переменной {{date}} (по умолчанию YYYYMMDDHHmmss).')
 			.addText(text => {
+				// eslint-disable-next-line obsidianmd/ui/sentence-case
 				text.setPlaceholder('YYYYMMDDHHmmss')
 					.setValue(this.plugin.settings.dateFormat)
 					.onChange(async (value) => {
@@ -665,7 +663,7 @@ class LSRenamerSettingTab extends PluginSettingTab {
 					this.display();
 				}));
 
-		containerEl.createEl('h3', { text: 'Картинки из нескольких заметок' });
+		new Setting(containerEl).setName('Картинки из нескольких заметок').setHeading();
 		containerEl.createEl('p', { 
 			text: 'Что делать, если картинка вставлена в текущую заметку, но также используется в других заметках?', 
 			cls: 'ls-renamer-setting-desc' 

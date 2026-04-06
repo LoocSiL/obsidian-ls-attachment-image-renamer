@@ -224,3 +224,31 @@
   content: '💢';
   margin-right: 6px;
 }
+
+/* Стили для модального окна */
+.ls-renamer-modal-heading {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.ls-renamer-template-input {
+  width: 400px;
+}
+
+.ls-renamer-date-input {
+  width: 140px;
+}
+
+.ls-renamer-warning-text {
+  white-space: pre-wrap;
+  color: var(--text-error);
+  margin-bottom: 20px;
+}
+
+.ls-renamer-settings-input {
+  width: 300px;
+}
+
+.ls-renamer-settings-heading {
+  margin-top: 24px;
+}
