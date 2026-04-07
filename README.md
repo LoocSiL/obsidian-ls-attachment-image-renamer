@@ -1,5 +1,7 @@
 # LS Attachment Image Renamer
 
+![](https://img.shields.io/github/v/release/LoocSiL/obsidian-ls-attachment-image-renamer) ![](https://img.shields.io/github/release-date/LoocSiL/obsidian-ls-attachment-image-renamer) ![](https://img.shields.io/github/license/LoocSiL/obsidian-ls-attachment-image-renamer) ![](https://img.shields.io/github/downloads/LoocSiL/obsidian-ls-attachment-image-renamer)
+
 Плагин для [Obsidian](https://obsidian.md), позволяющий массово переименовывать изображения, вставленные в текущую заметку.
 
 - **Глобальные настройки** - основные настройки плагина, которые используются по умолчанию для модального окна предпросмотра файлов перед переименованием.
